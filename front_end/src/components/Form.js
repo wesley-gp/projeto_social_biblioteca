@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import styled from "styled-components";
 
-
+//estilizaçoes
 const FormContainer = styled.form`
     display: flex;
     align-items: flex-end;
@@ -37,9 +37,10 @@ const Button = styled.button`
     height: 42px;
 
 `
-
-const Form = ({onEdit}) => {
+// widget que vai ser exportado
+const Form = ({ getLoan}) => {
     const ref = useRef()
+    
     return(  
         <FormContainer ref={ref}>
             <InputArea>
@@ -59,4 +60,6 @@ const Form = ({onEdit}) => {
         </FormContainer>
     );
 };
+
+//importação
 export default Form;

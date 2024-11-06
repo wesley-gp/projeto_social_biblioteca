@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-
+// estilizaçoes
 const Table = styled.table `
     width: 100%;
     background-color: #fff;
@@ -12,9 +12,8 @@ const Table = styled.table `
     word-break: break-all;
 
 `
-export const Thead = styled.thead`
-
-`
+export const Thead = styled.thead``
+export const Tbody = styled.tbody``;
 export const Tr = styled.tr``
 
 export const Th = styled.th`
@@ -24,9 +23,16 @@ export const Th = styled.th`
 
 
 `
+export const Td = styled.td`
+  padding-top: 15px;
+  text-align: ${(props) => (props.alignCenter ? "center" : "start")};
+  width: ${(props) => (props.width ? props.width : "auto")};
 
-
-const Grid = ()=>{
+`;
+//widget que vai ser exportado
+const Grid = ({ loans})=>{
+      
+    
     return (
         <Table>
             <Thead>
@@ -36,11 +42,25 @@ const Grid = ()=>{
                     <Th>Data</Th> 
                 </Tr>
             </Thead>
+            <Tbody>
+                {
+                    loans.map((item,i)=>(
+                        <Tr key={i}>
+                        <Td width="30%">{item.aluno}</Td>
+                        <Td width="30%">{item.livro}</Td>
+                        <Td width="20%">
+                          {item.data_emprestimo}
+                        </Td>
+                        
+                      </Tr> 
+                    ))
+                }
+            </Tbody>
         </Table>
 
     )
         
     
 }
-
+//exportação
 export default Grid;
