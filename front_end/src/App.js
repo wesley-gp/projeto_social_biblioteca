@@ -2,7 +2,7 @@ import GlobalStyle from "./styles/global";
 import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styled from "styled-components"
-import Form from "./components/Form";
+//import Form from "./components/Form";
 import Grid from "./components/Grid"
 import Menu from "./components/Menu"
 import axios from "axios"
@@ -23,7 +23,7 @@ const Title = styled.h2``
 
 function App() {
   const [loans, setLoans] = useState([]);
-  const [onEdit] = useState(null);
+  //const [onEdit] = useState(null);
   //pegando o banco de dados pelo axios
   const getLoans = async () => {
     try {
