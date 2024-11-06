@@ -1,0 +1,96 @@
+-- 1. Criar o Banco de Dados
+CREATE DATABASE BibliotecaDB;
+USE BibliotecaDB;
+
+-- 2. Criar a Tabela de Alunos
+CREATE TABLE Alunos (
+    aluno_id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    turma VARCHAR(50) NOT NULL
+);
+
+-- 3. Trigger para garantir que o nome do aluno seja único
+DELIMITER //
+
+CREATE TRIGGER VerificarNomeUnico
+BEFORE INSERT ON Alunos
+FOR EACH ROW
+BEGIN
+    DECLARE nome_existente INT;
+
+    -- Verifica se o nome do novo aluno já existe
+    SELECT COUNT(*) INTO nome_existente 
+    FROM Alunos 
+    WHERE nome = NEW.nome;
+
+    -- Se o nome já existir, sinaliza com uma mensagem de aviso
+    IF nome_existente > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Aviso: Já existe um aluno com este nome.';
+    END IF;
+END//
+
+DELIMITER ;
+
+-- 4. Criar a Tabela de Livros
+CREATE TABLE Livros (
+    livro_id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL
+);
+
+-- 5. Criar a Tabela de Empréstimos
+CREATE TABLE Emprestimos (
+    emprestimo_id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT,
+    livro_id INT,
+    data_emprestimo DATE NOT NULL,
+    data_devolucao DATE,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(aluno_id),
+    FOREIGN KEY (livro_id) REFERENCES Livros(livro_id)
+);
+
+-- 6. Trigger para garantir que cada livro só pode ser emprestado a um aluno por vez
+DELIMITER //
+
+CREATE TRIGGER VerificarLivroUnico
+BEFORE INSERT ON Emprestimos
+FOR EACH ROW
+BEGIN
+    DECLARE livro_emprestado INT;
+
+    -- Verifica se o livro já está emprestado (data_devolucao ainda NULL)
+    SELECT COUNT(*) INTO livro_emprestado 
+    FROM Emprestimos 
+    WHERE livro_id = NEW.livro_id AND data_devolucao IS NULL;
+
+    -- Se o livro já estiver emprestado, sinaliza com uma mensagem de aviso
+    IF livro_emprestado > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Aviso: Este livro já está emprestado a outro aluno.';
+    END IF;
+END//
+
+DELIMITER ;
+
+-- 7. Trigger para limitar empréstimos a um livro por aluno
+DELIMITER //
+
+CREATE TRIGGER LimitarEmprestimos
+BEFORE INSERT ON Emprestimos
+FOR EACH ROW
+BEGIN
+    DECLARE emprestimos_contagem INT;
+
+    -- Contar quantos empréstimos sem devolução o aluno possui
+    SELECT COUNT(*) INTO emprestimos_contagem 
+    FROM Emprestimos 
+    WHERE aluno_id = NEW.aluno_id AND data_devolucao IS NULL;
+
+    -- Se já existir um empréstimo sem devolução, impede novo empréstimo com mensagem de aviso
+    IF emprestimos_contagem > 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Aviso: Cada aluno só pode ter 1 livro emprestado por vez.';
+    END IF;
+END//
+
+DELIMITER ;
