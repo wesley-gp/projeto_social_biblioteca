@@ -38,7 +38,7 @@ const Button = styled.button`
 
 `
 // widget que vai ser exportado
-const Form = ({ getLoan}) => {
+const Form = () => {
     const ref = useRef()
     
     return(  

@@ -28,7 +28,7 @@ function App() {
   const getLoans = async () => {
     try {
       const res = await axios.get("http://localhost:8800");
-      setLoans(res.data.sort((a, b) => (a.nome > b.nome ? 1 : -1)));
+      setLoans(res.data.sort((a, b) => (a.data_devolucao_prevista > b.data_devolucao_prevista ? 1 : -1)));
     } catch (error) {
       toast.error(error);
     }

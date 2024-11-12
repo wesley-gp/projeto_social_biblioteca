@@ -7,7 +7,7 @@ const Table = styled.table `
     background-color: #fff;
     padding: 20px;
     box-shadow: 0px 0px 5px #ccc;
-    max-width: 800px;
+    max-width: 1000px;
     margin: 20px auto;
     word-break: break-all;
 
@@ -20,7 +20,7 @@ export const Th = styled.th`
     text-align: start;
     border-bottom: inset;
     padding-bottom: 5px;
-
+    text-align: ${(props) => (props.alignCenter ? "center" : "start")};
 
 `
 export const Td = styled.td`
@@ -40,17 +40,19 @@ const Grid = ({ loans})=>{
                     <Th>Nome</Th> 
                     <Th>Livro</Th> 
                     <Th>Data</Th> 
+                    <Th alignCenter= "center">Dias</Th>
                 </Tr>
             </Thead>
             <Tbody>
                 {
                     loans.map((item,i)=>(
                         <Tr key={i}>
-                        <Td width="30%">{item.aluno}</Td>
-                        <Td width="30%">{item.livro}</Td>
-                        <Td width="20%">
+                        <Td width="30%">{item.aluno_nome}</Td>
+                        <Td width="35%">{item.livro_titulo}</Td>
+                        <Td width="25%">
                           {item.data_emprestimo}
                         </Td>
+                        <Td alignCenter="center">{item.status_devolucao}</Td>
                         
                       </Tr> 
                     ))
