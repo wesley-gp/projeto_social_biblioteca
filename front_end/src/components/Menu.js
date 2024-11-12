@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import Consultar from "../pages/Consultar";
 import InserirAlunos from "../pages/InserirAlunos";
 import InserirLivros from "../pages/InserirLivros";
@@ -34,11 +34,11 @@ const Menu = () => {
     
     return(  
         <Div>
-            <Button type="button">Consultar</Button> 
-             <Button type="button">Inserir Alunos</Button>
-             <Button type="button">Inserir Livros</Button>
-            <Button type="button">Novo Empréstimos</Button>
-        </Div>
+      <ButtonLink to="/consultar">Consultar</ButtonLink>
+      <ButtonLink to="/inserir-alunos">Inserir Alunos</ButtonLink>
+      <ButtonLink to="/inserir-livros">Inserir Livros</ButtonLink>
+      <ButtonLink to="/novo-emprestimo">Novo Empréstimo</ButtonLink>
+    </Div>
   
     );
 };
