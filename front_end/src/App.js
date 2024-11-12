@@ -7,6 +7,12 @@ import Grid from "./components/Grid"
 import Menu from "./components/Menu"
 import axios from "axios"
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Consultar from "./pages/Consultar";
+import InserirAlunos from "./pages/InserirAlunos";
+import InserirLivros from "./pages/InserirLivros";
+import NovoEmprestimo from "./pages/NovoEmprestimo";
+
 
 //estilizações
 const Container = styled.div`
@@ -45,7 +51,15 @@ function App() {
     
     <Container>      
       <Title>Teste</Title>
+      <Router>
       <Menu/>
+      <Routes>
+        <Route path="/Consultar" element={<Consultar />} />
+        <Route path="/InserirAlunos" element={<InserirAlunos />} />
+        <Route path="/InserirLivros" element={<InserirLivros />} />
+        <Route path="/NovoEmprestimo" element={<NovoEmprestimo />} />
+      </Routes>
+    </Router>
       <Grid loans= {loans}/>
     </Container>
       <ToastContainer autoClose={3000} position={"bottom-left"}/>

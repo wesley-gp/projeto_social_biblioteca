@@ -18,7 +18,7 @@ const Div = styled.div`
 
 `
 // Button
-const Button = styled.button`
+const ButtonLink = styled(Link)`
     margin: auto 10px;
     padding: 10px;
     cursor: pointer;
@@ -34,10 +34,10 @@ const Menu = () => {
     
     return(  
         <Div>
-      <ButtonLink to="/consultar">Consultar</ButtonLink>
-      <ButtonLink to="/inserir-alunos">Inserir Alunos</ButtonLink>
-      <ButtonLink to="/inserir-livros">Inserir Livros</ButtonLink>
-      <ButtonLink to="/novo-emprestimo">Novo Empréstimo</ButtonLink>
+      <ButtonLink to="/Consultar">Consultar</ButtonLink>
+      <ButtonLink to="/InserirAlunos">Inserir Alunos</ButtonLink>
+      <ButtonLink to="/InserirLivros">Inserir Livros</ButtonLink>
+      <ButtonLink to="/NovoEmprestimo">Novo Empréstimo</ButtonLink>
     </Div>
   
     );
