@@ -1,7 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-
-
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Consultar from "../pages/Consultar";
+import InserirAlunos from "../pages/InserirAlunos";
+import InserirLivros from "../pages/InserirLivros";
+import NovoEmprestimo from "../pages/NovoEmprestimo";
 
 // Div principal, card
 const Div = styled.div`
@@ -36,8 +39,7 @@ const Menu = () => {
              <Button type="button">Inserir Livros</Button>
             <Button type="button">Novo Empréstimos</Button>
         </Div>
-             
-        
+  
     );
 };
 
