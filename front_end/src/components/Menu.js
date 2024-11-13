@@ -1,10 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import Consultar from "../pages/Consultar";
-import InserirAlunos from "../pages/InserirAlunos";
-import InserirLivros from "../pages/InserirLivros";
-import NovoEmprestimo from "../pages/NovoEmprestimo";
 
 // Div principal, card
 const Div = styled.div`
@@ -27,7 +23,10 @@ const ButtonLink = styled(Link)`
     background-color: #2c73d2;
     color: white;
     height: 42px;
-
+    text-decoration: none;
+    :hover{
+        background-color: #0d2a52;
+    }
 `
 // Widget que vai ser exportado
 const Menu = () => {

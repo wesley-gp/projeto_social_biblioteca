@@ -7,7 +7,7 @@ const Table = styled.table `
     background-color: #fff;
     padding: 20px;
     box-shadow: 0px 0px 5px #ccc;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 20px auto;
     word-break: break-all;
 
@@ -39,7 +39,7 @@ const Grid = ({ loans})=>{
                 <Tr>    
                     <Th>Nome</Th> 
                     <Th>Livro</Th> 
-                    <Th>Data</Th> 
+                    <Th alignCenter= "center">Data</Th> 
                     <Th alignCenter= "center">Dias</Th>
                 </Tr>
             </Thead>
@@ -48,11 +48,11 @@ const Grid = ({ loans})=>{
                     loans.map((item,i)=>(
                         <Tr key={i}>
                         <Td width="25%">{item.aluno_nome}</Td>
-                        <Td width="40%">{item.livro_titulo}</Td>
-                        <Td width="18%">
+                        <Td >{item.livro_titulo}</Td>
+                        <Td width="18%" alignCenter="center">
                           {item.data_emprestimo}
                         </Td>
-                        <Td alignCenter="center" w>{item.status_devolucao}</Td>
+                        <Td alignCenter="center" width={"15%"}>{item.status_devolucao}</Td>
                         
                       </Tr> 
                     ))
