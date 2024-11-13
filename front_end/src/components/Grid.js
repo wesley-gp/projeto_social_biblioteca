@@ -47,12 +47,12 @@ const Grid = ({ loans})=>{
                 {
                     loans.map((item,i)=>(
                         <Tr key={i}>
-                        <Td width="30%">{item.aluno_nome}</Td>
-                        <Td width="35%">{item.livro_titulo}</Td>
-                        <Td width="25%">
+                        <Td width="25%">{item.aluno_nome}</Td>
+                        <Td width="40%">{item.livro_titulo}</Td>
+                        <Td width="18%">
                           {item.data_emprestimo}
                         </Td>
-                        <Td alignCenter="center">{item.status_devolucao}</Td>
+                        <Td alignCenter="center" w>{item.status_devolucao}</Td>
                         
                       </Tr> 
                     ))
