@@ -1,7 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-
-
+import { Link } from "react-router-dom";
+import Consultar from "../pages/Consultar";
+import InserirAlunos from "../pages/InserirAlunos";
+import InserirLivros from "../pages/InserirLivros";
+import NovoEmprestimo from "../pages/NovoEmprestimo";
 
 // Div principal, card
 const Div = styled.div`
@@ -15,7 +18,7 @@ const Div = styled.div`
 
 `
 // Button
-const Button = styled.button`
+const ButtonLink = styled(Link)`
     margin: auto 10px;
     padding: 10px;
     cursor: pointer;
@@ -31,13 +34,12 @@ const Menu = () => {
     
     return(  
         <Div>
-            <Button type="button">Consultar</Button> 
-             <Button type="button">Inserir Alunos</Button>
-             <Button type="button">Inserir Livros</Button>
-            <Button type="button">Novo Empréstimos</Button>
-        </Div>
-             
-        
+      <ButtonLink to="/Consultar">Consultar</ButtonLink>
+      <ButtonLink to="/InserirAlunos">Inserir Alunos</ButtonLink>
+      <ButtonLink to="/InserirLivros">Inserir Livros</ButtonLink>
+      <ButtonLink to="/NovoEmprestimo">Novo Empréstimo</ButtonLink>
+    </Div>
+  
     );
 };
 
