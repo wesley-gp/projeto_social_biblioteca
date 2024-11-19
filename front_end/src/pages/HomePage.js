@@ -23,7 +23,11 @@ const Container = styled.div`
 `
 
 const Title = styled.h2``
-
+const Tela = styled.div`
+    width: 100%;
+    height: 100%;
+    background-color: #000066;
+`
    const HomePage= () =>{
     const [loans, setLoans] = useState([]);
     //const [onEdit] = useState(null);
@@ -46,12 +50,12 @@ const Title = styled.h2``
 // o que vai retornar para o index
   return (
 
-    <>
-    <Container>      
-      <Title>Teste</Title> 
-      <Menu/>
-      <Grid loans= {loans}/>
-    </Container>
+    <>   
+      <Container>      
+        <Title>Teste</Title> 
+        <Menu/>
+        <Grid loans= {loans}/>
+      </Container>
       <ToastContainer autoClose={3000} position={"bottom-left"}/>
       <GlobalStyle/>
     </>  

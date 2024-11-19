@@ -8,4 +8,4 @@ const conConfig = {
     database: 'bibliotecaDB'
 };
 
-export const pool = mysql.createPool(conConfig);
+export const db = mysql.createPool(conConfig);

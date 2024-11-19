@@ -1,9 +1,10 @@
 import express from "express";
-import  {getLoan}  from "../controllers/user.js";
+import  {getBooks, getLoan, setLoan}  from "../controllers/user.js";
 
 const router = express.Router();
 
 router.get("/", getLoan);
-router.get("/consultas:tipo", )
+router.get("/addEmprestimo", setLoan)
+router.get("/Livros", getBooks)
 
 export default router;

@@ -7,13 +7,14 @@ const Table = styled.table `
     background-color: #fff;
     padding: 20px;
     box-shadow: 0px 0px 5px #ccc;
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 20px auto;
     word-break: break-all;
-
+   
+    display: ${(props) => (props.display ? props.display : "flex")};
 `
 export const Thead = styled.thead``
-export const Tbody = styled.tbody``
+export const Tbody = styled.tbody``;
 export const Tr = styled.tr``
 
 export const Th = styled.th`
@@ -21,7 +22,7 @@ export const Th = styled.th`
     border-bottom: inset;
     padding-bottom: 5px;
     text-align: ${(props) => (props.alignCenter ? "center" : "start")};
-    
+
 `
 export const Td = styled.td`
   padding-top: 15px;
@@ -29,32 +30,30 @@ export const Td = styled.td`
   width: ${(props) => (props.width ? props.width : "auto")};
 
 `;
-
-
 //widget que vai ser exportado
-const Grid = ({ loans})=>{
+const GridForm = ({ loans, dados, display})=>{
       
     
     return (
-        <Table>
+        <Table display={display}>
             <Thead>
                 <Tr>    
-                    <Th alignCenter>Nome</Th> 
-                    <Th alignCenter>Livro</Th> 
-                    <Th alignCenter= "center">Data</Th> 
-                    <Th alignCenter= "center">Dias</Th>
+                    <Th>Nome</Th> 
+                    <Th>Livro</Th> 
+                    <Th alignCenter>Data</Th> 
+                    <Th alignCenter>Dias</Th>
                 </Tr>
             </Thead>
             <Tbody>
                 {
                     loans.map((item,i)=>(
                         <Tr key={i}>
-                        <Td width="25%"alignCenter>{item.aluno_nome}</Td>
-                        <Td alignCenter>{item.livro_titulo}</Td>
-                        <Td width="18%" alignCenter="center">
+                        <Td width="25%">{item.aluno_nome}</Td>
+                        <Td >{item.livro_titulo}</Td>
+                        <Td width="18%" alignCenter>
                           {item.data_emprestimo}
                         </Td>
-                        <Td alignCenter="center" width={"15%"}>{item.status_devolucao}</Td>
+                        <Td alignCenter width={"15%"}>{item.status_devolucao}</Td>
                         
                       </Tr> 
                     ))
@@ -67,4 +66,4 @@ const Grid = ({ loans})=>{
     
 }
 //exportação
-export default Grid;
+export default GridForm;

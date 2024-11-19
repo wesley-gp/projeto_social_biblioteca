@@ -1,7 +1,7 @@
-import React, {useRef} from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-
-//estilizaçoes
+import axios from "axios";
+// estilizações
 const FormContainer = styled.form`
     display: flex;
     align-items: flex-end;
@@ -35,31 +35,91 @@ const Button = styled.button`
     background-color: #2c73d2;
     color: white;
     height: 42px;
-
-`
-// widget que vai ser exportado
-const Form = () => {
-    const ref = useRef()
     
-    return(  
-        <FormContainer ref={ref}>
-            <InputArea>
-                <Label>Nome</Label>
-                <Input name="nome"/>
-            </InputArea>
-            <InputArea>
-                <Label >Turma</Label>
-                <Input name= "Turma"></Input>
-            </InputArea>
-            <InputArea>
-                <Label>Livro</Label>
-                <Input name= "Livro"></Input>
-            </InputArea>
+`
 
-            <Button type="submit">Analisar</Button>
-        </FormContainer>
-    );
+const Form = ({ formType }) => {
+  const [formData, setFormData] = useState({});
+  const [tituloLivro, setTituloLivro] = useState("");
+
+  const formConfigurations = {
+    NovoEmprestimo: [
+      { label: "ID do Livro", name: "idLivro" },
+      { label: "ID do Aluno", name: "idAluno" },
+      { label: "Data de Empréstimo", name: "dataEmprestimo" },
+    ],
+    InserirAlunos: [
+      { label: "Nome Completo", name: "nomeCompleto" },
+      { label: "Turma", name: "turma" },
+    ],
+    InserirLivros: [
+      { label: "Título do Livro", name: "tituloLivro" },
+      { label: "Autor", name: "autor" },
+    ],
+
+  };
+
+  const fields = formConfigurations[formType] || [];
+  
+  // Atualiza o estado local com os valores dos campos
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Busca o título do livro quando o ID do livro muda
+  useEffect(() => {
+    const fetchTituloLivro = async () => {
+      if (!formData.idLivro) {
+        setTituloLivro(""); // Limpa o título se o campo ID estiver vazio
+        return;
+      }
+  
+      try {
+        const res = await axios.get(`http://localhost:8800/Livros`);
+        const livro = res.data.find(
+          (livro) => livro.id === parseInt(formData.idLivro, 10)
+        );
+  
+        if (livro) {
+          setTituloLivro(livro.titulo);
+        } else {
+          setTituloLivro("Livro não encontrado");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar título do livro:", error); // Registra o erro
+        setTituloLivro("Erro ao buscar livro" + error);
+      }
+    };
+  
+    fetchTituloLivro();
+  }, [formData.idLivro]); // O efeito roda sempre que `idLivro` muda
+
+  return (
+    <>
+      <InputArea>
+        <h1>{tituloLivro}</h1>
+      </InputArea>
+
+      <FormContainer>
+        {fields.map((field, index) => (
+          <InputArea key={index}>
+            <Label>{field.label}</Label>
+            <Input
+              name={field.name}
+              value={formData[field.name] || ""}
+              onChange={handleChange}
+            />
+          </InputArea>
+        ))}
+
+        <Button type="submit">Salvar</Button>
+      </FormContainer>
+    </>
+  );
 };
 
-//importação
 export default Form;
