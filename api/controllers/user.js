@@ -89,3 +89,23 @@ export const alterationSet = (req, res) => {
     console.error('Erro no servidor:', err);
     res.status(500).send({ error: 'Erro no servidor.' });
   }}
+
+  export const getAllData = async (req, res) => {
+    try {
+        const table = req.params.table; // Recebe a tabela pela URL
+        if (!table) {
+            return res.status(400).json({ error: "Tabela não especificada." });
+        }
+
+        const allowedTables = ["Aluno", "Livro", "Emprestimo"]; // Tabelas permitidas
+        if (!allowedTables.includes(table)) {
+            return res.status(400).json({ error: "Tabela não permitida." });
+        }
+
+        const [rows] = await db.query(`SELECT * FROM ${table}`);
+        return res.status(200).json(rows);
+    } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+        return res.status(500).json({ error: error.message });
+    }
+};

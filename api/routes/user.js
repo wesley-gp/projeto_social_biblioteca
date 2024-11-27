@@ -6,5 +6,6 @@ const router = express.Router();
 router.get("/", getLoan);
 router.get("/Livros", getBooks)
 router.post("/salvar", alterationSet)
+router.get("/verificador",getAllData)
 
 export default router;
