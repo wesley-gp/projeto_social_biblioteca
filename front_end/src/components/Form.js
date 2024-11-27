@@ -51,6 +51,7 @@ const Form = ({ formType }) => {
     InserirAlunos: [
       { label: "Nome Completo", name: "nomeCompleto" },
       { label: "Turma", name: "turma" },
+      { label: "Matrícula", name: "matricula"}
     ],
     InserirLivros: [
       { label: "Título do Livro", name: "tituloLivro" },
@@ -97,7 +98,24 @@ const Form = ({ formType }) => {
   
     fetchTituloLivro();
   }, [formData.idLivro]); // O efeito roda sempre que `idLivro` muda
-
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Impede o recarregamento da página
+  
+    try {
+      await axios.post('http://localhost:8800/salvar', {
+        formType,
+        formData,
+      }).then(()=>{
+        setFormData({}); 
+      });
+      
+    } catch (error) {
+      console.error('Erro ao salvar os dados:', error);
+      alert('Erro ao salvar os dados')
+    }
+  };
+  
+  
   return (
     <>
       <InputArea>
@@ -116,7 +134,7 @@ const Form = ({ formType }) => {
           </InputArea>
         ))}
 
-        <Button type="submit">Salvar</Button>
+        <Button type="submit" onClick={handleSubmit}>Salvar</Button>
       </FormContainer>
     </>
   );

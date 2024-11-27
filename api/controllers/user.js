@@ -39,3 +39,53 @@ export const getBooks = async(_, res,) => {
     
     
 }
+export const alterationSet = (req, res) => {
+   try{ 
+    const { formType, formData } = req.body;
+    if (!formType || !formData) {
+        return res.status(400).send({ error: 'Dados incompletos.' });
+      }
+  
+      if (formType === 'InserirAlunos') {
+        if (!formData.nomeCompleto || !formData.turma || !formData.matricula) {
+          return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir alunos.' });
+        }
+      }
+        if (formType=='InserirLivros'){
+            if(!formData.titulo){
+                return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
+            }
+        }
+        if (formType=='NovoEmprestimo'){
+            if(!formData.idAluno|| formData.idLivro){
+                return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
+            }
+        }
+  
+    let query = '';
+    if (formType === 'InserirAlunos') {
+      query = 'INSERT INTO aluno (nome, turma, matricula) VALUES (?, ?, ?)';
+    } else if (formType === 'InserirLivros') {
+      query = 'INSERT INTO livro (titulo) VALUES (?)';
+    } else if (formType === 'NovoEmprestimo') {
+      query = 'INSERT INTO Emprestimo (aluno_id, livro_id, data_emprestimo, data_devolucao_prevista) VALUES(?, ?, CURDATE(), date_add(curdate(), INTERVAL 14 DAY));';
+    }
+    else {
+        return res.status(400).send({ error: 'Tipo de formulário inválido.' });
+      }
+    const values = Object.values(formData);
+    db.query(query, values, (err) => {
+      if (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).send({ error: 'Matrícula já cadastrada.' });
+          }
+        console.error('Erro ao salvar dados:', err);
+        return res.status(500).send({ error: 'Erro ao salvar no banco de dados.' });
+      }
+      
+      return res.status(200).send('Dados salvos com sucesso!');
+    });
+  } catch{
+    console.error('Erro no servidor:', err);
+    res.status(500).send({ error: 'Erro no servidor.' });
+  }}
