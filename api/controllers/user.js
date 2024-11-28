@@ -1,15 +1,42 @@
 
 import { db } from "../db.js";
 // função responsavel por pegar os dados do Grid.js
-export const getLoan = async (_, res) => {
-    try {
-        const [rows] = await db.query("SELECT e.id AS emprestimo_id, a.nome AS aluno_nome, a.matricula AS aluno_matricula, l.titulo AS livro_titulo, DATE_FORMAT(e.data_emprestimo, \'%d-%m-%Y\') AS data_emprestimo, DATE_FORMAT(e.data_devolucao_prevista, \'%d-%m-%Y\') AS data_devolucao_prevista, DATE_FORMAT(e.data_devolucao, \'%d-%m-%Y\') AS data_devolucao, CASE  WHEN e.extensao_pedida = TRUE THEN \'Sim\' ELSE \'Não\' END AS extensao_pedida, CASE WHEN e.data_devolucao IS NULL AND e.data_devolucao_prevista < CURDATE() THEN \'Atrasado\' WHEN e.data_devolucao IS NOT NULL AND e.data_devolucao > e.data_devolucao_prevista THEN \'Devolvido Atrasado\' WHEN e.data_devolucao IS NOT NULL AND e.data_devolucao <= e.data_devolucao_prevista THEN \'Devolvido Em Dia\' ELSE \'Em Dia\' END AS status_devolucao, IF(e.extensao_pedida = TRUE, DATEDIFF(e.data_devolucao_prevista, DATE_ADD(e.data_devolucao_prevista, INTERVAL -14 DAY)), 0) AS dias_extensao FROM Emprestimo e JOIN   Aluno a ON e.aluno_id = a.id JOIN Livro l ON e.livro_id = l.id;");
-        return res.status(200).json(rows);
-    } catch (error) {
-        console.log(error.message)
-        return res.status(500).json({ error: error.message });
-    }
+export const getLoan = async (_, res) => { 
+  try {
+      // Consulta com a ordenação por data_devolucao_prevista
+      const [rows] = await db.query(`
+          SELECT 
+              e.id AS emprestimo_id, 
+              a.nome AS aluno_nome, 
+              a.matricula AS aluno_matricula, 
+              l.titulo AS livro_titulo, 
+              DATE_FORMAT(e.data_emprestimo, '%d-%m-%Y') AS data_emprestimo, 
+              DATE_FORMAT(e.data_devolucao_prevista, '%d-%m-%Y') AS data_devolucao_prevista, 
+              DATE_FORMAT(e.data_devolucao, '%d-%m-%Y') AS data_devolucao, 
+              CASE  
+                  WHEN e.extensao_pedida = TRUE THEN 'Sim' 
+                  ELSE 'Não' 
+              END AS extensao_pedida, 
+              CASE 
+                  WHEN e.data_devolucao IS NULL AND e.data_devolucao_prevista < CURDATE() THEN 'Atrasado' 
+                  WHEN e.data_devolucao IS NOT NULL AND e.data_devolucao > e.data_devolucao_prevista THEN 'Devolvido Atrasado' 
+                  WHEN e.data_devolucao IS NOT NULL AND e.data_devolucao <= e.data_devolucao_prevista THEN 'Devolvido Em Dia' 
+                  ELSE 'Em Dia' 
+              END AS status_devolucao, 
+              IF(e.extensao_pedida = TRUE, DATEDIFF(e.data_devolucao_prevista, DATE_ADD(e.data_devolucao_prevista, INTERVAL -14 DAY)), 0) AS dias_extensao 
+          FROM Emprestimo e 
+          JOIN Aluno a ON e.aluno_id = a.id 
+          JOIN Livro l ON e.livro_id = l.id
+          ORDER BY e.data_devolucao_prevista;  -- Ordenando pela data_devolucao_prevista
+      `);
+
+      return res.status(200).json(rows);
+  } catch (error) {
+      console.log(error.message);
+      return res.status(500).json({ error: error.message });
+  }
 };
+
 //função responsavel por pegar todos os emprestimos para verificação
 
 export const getAllLoans = async(_, res,) => {
@@ -36,6 +63,18 @@ export const getBooks = async(_, res,) => {
     }
     
     
+}
+export const getStudents = async(_, res,) => {
+
+  try {
+      const q = "SELECT * FROM aluno"
+      const [rows]= await db.query(q)
+      return res.status(200).json(rows)
+  } catch (error) {
+      return res.json(error.message)
+  }
+  
+  
 }
 // função responsavel por pegar todos os alunos
 export const getStudentsLoan = async () => {
@@ -75,7 +114,7 @@ export const alterationSet = async (req, res) => {
         //vendo se existe campos vazios que são obrigatorios no InserirLivros
         if (formType=='InserirLivros'){
             
-            if(!formData.titulo){
+            if(!formData.tituloLivro){
                 return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
             }
         }
@@ -100,6 +139,7 @@ export const alterationSet = async (req, res) => {
                 return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
             }
           }
+          // fazer linha de verificação
         }
     // parte que analisa qual vai ser o comando passado ao banco de dados a partir do formType
         //formtype é um atributo do Form.js
@@ -109,15 +149,16 @@ export const alterationSet = async (req, res) => {
     } else if (formType === 'InserirLivros') {
       query = 'INSERT INTO livro (titulo) VALUES (?)';
     } else if (formType === 'NovoEmprestimo') {
-      query = 'INSERT INTO Emprestimo (aluno_id, livro_id, data_emprestimo, data_devolucao_prevista) VALUES(?, ?, CURDATE(), date_add(curdate(), INTERVAL 14 DAY));';
+      query = 'INSERT INTO Emprestimo (livro_id, aluno_id, data_emprestimo, data_devolucao_prevista) VALUES(?, ?, CURDATE(), date_add(curdate(), INTERVAL 14 DAY));';
     }
     else {
         return res.status(400).send({ error: 'Tipo de formulário inválido.' });
       }
     // pegando os valores dados no formulario
     const values = Object.values(formData);
+    console. log (values)
    try {
-    db.query(query, values, (err) => {
+    await db.query(query, values, (err) => {
     //varias tentativas de pegar erros (sinceramente não sei qual que tá funcionando, tem um monte)
       if (err) {
         if (err.code === 'ER_DUP_ENTRY') {
@@ -135,7 +176,8 @@ export const alterationSet = async (req, res) => {
       
       
    } catch (error) {
-      return res.status(500).send({error:'Erro no servidor:' })
+    console.log(error)
+      return res.status(500).send({error:'Erro no servidor:', details: error.message })
    }
     
     

@@ -23,11 +23,7 @@ const Container = styled.div`
 `
 
 const Title = styled.h2``
-const Tela = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: #000066;
-`
+
    const HomePage= () =>{
     const [loans, setLoans] = useState([]);
     //const [onEdit] = useState(null);
@@ -35,7 +31,7 @@ const Tela = styled.div`
     const getLoans = async () => {
       try {
         const res = await axios.get("http://localhost:8800");
-        setLoans(res.data.sort((a, b) => (a.data_devolucao_prevista > b.data_devolucao_prevista ? 1 : -1)));
+        setLoans(res.data);
       } catch (error) {
         toast.error(error);
       }

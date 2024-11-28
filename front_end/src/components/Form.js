@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
 // estilizações
@@ -41,12 +41,13 @@ const Button = styled.button`
 const Form = ({ formType }) => {
   const [formData, setFormData] = useState({});
   const [tituloLivro, setTituloLivro] = useState("");
+  const [nomeAluno, setNomeAluno] = useState("");
 
   const formConfigurations = {
     NovoEmprestimo: [
       { label: "ID do Livro", name: "idLivro" },
       { label: "ID do Aluno", name: "idAluno" },
-      { label: "Data de Empréstimo", name: "dataEmprestimo" },
+      
     ],
     InserirAlunos: [
       { label: "Nome Completo", name: "nomeCompleto" },
@@ -69,38 +70,66 @@ const Form = ({ formType }) => {
       [name]: value,
     }));
   };
+  //busca livros no servidor
+  const fetchLivro = useCallback(async (idLivro) => {
+    try {
+      const { data } = await axios.get("http://localhost:8800/Livros");
+      const livro = data.find((livro) => livro.id === parseInt(idLivro, 10));
+      return livro ? livro.titulo : "Livro não encontrado";
+    } catch (error) {
+      console.error("Erro ao buscar título do livro:", error);
+      return "Erro ao buscar título do livro";
+    }
+  }, []);
 
+  const fetchAluno = useCallback(async (idAluno) => {
+    try {
+      const { data } = await axios.get("http://localhost:8800/alunos");
+      const aluno = data.find((aluno) => aluno.id === parseInt(idAluno, 10));
+      return aluno ? aluno.nome : "Aluno não encontrado";
+    } catch (error) {
+      console.error("Erro ao buscar nome do aluno:", error);
+      return "Erro ao buscar nome do aluno";
+    }
+  }, []);
   // Busca o título do livro quando o ID do livro muda
   useEffect(() => {
-    const fetchTituloLivro = async () => {
+    const fetchData = async () => {
       if (!formData.idLivro) {
-        setTituloLivro(""); // Limpa o título se o campo ID estiver vazio
-        return;
+          setTituloLivro(""); // Limpa o título se o ID do livro estiver ausente
       }
+    
+      if (!formData.idAluno) {
+          setNomeAluno(""); // Limpa o nome se o ID do aluno estiver ausente
+      }
+      
+      // Continua para buscar dados somente se pelo menos um ID estiver presente
+      if (!formData.idLivro && !formData.idAluno) {
+          return;
+      }
+      try {//tenta pegar os valores dos Form, caso contrario deixa ""
+        const [tituloLivro, nomeAluno] = await Promise.all([
+          formData.idLivro ? fetchLivro(formData.idLivro) : "",
+          formData.idAluno ? fetchAluno(formData.idAluno) : "",
+        ]);
   
-      try {
-        const res = await axios.get(`http://localhost:8800/Livros`);
-        const livro = res.data.find(
-          (livro) => livro.id === parseInt(formData.idLivro, 10)
-        );
-  
-        if (livro) {
-          setTituloLivro(livro.titulo);
-        } else {
-          setTituloLivro("Livro não encontrado");
-        }
+        setTituloLivro(tituloLivro);
+        setNomeAluno(nomeAluno);
       } catch (error) {
-        console.error("Erro ao buscar título do livro:", error); // Registra o erro
-        setTituloLivro("Erro ao buscar livro" + error);
+        console.error("Erro ao buscar dados:", error);
       }
     };
+    
   
-    fetchTituloLivro();
-  }, [formData.idLivro]); // O efeito roda sempre que `idLivro` muda
+    fetchData();
+    
+  }, [formData.idLivro, formData.idAluno,fetchAluno,fetchLivro]); // O efeito roda sempre que `idLivro` ou `idAluno` muda
   const handleSubmit = async (e) => {
     e.preventDefault(); // Impede o recarregamento da página
     
     try {
+      console.log(formData)
+      console.log(formType)
       await axios.post('http://localhost:8800/salvar', {
         formType,
         formData,
@@ -125,6 +154,7 @@ const Form = ({ formType }) => {
     <>
       <InputArea>
         <h1>{tituloLivro}</h1>
+        <h1>{nomeAluno}</h1>
       </InputArea>
 
       <FormContainer>
