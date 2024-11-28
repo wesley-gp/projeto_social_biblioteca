@@ -1,6 +1,6 @@
 
 import { db } from "../db.js";
-
+// função responsavel por pegar os dados do Grid.js
 export const getLoan = async (_, res) => {
     try {
         const [rows] = await db.query("SELECT e.id AS emprestimo_id, a.nome AS aluno_nome, a.matricula AS aluno_matricula, l.titulo AS livro_titulo, DATE_FORMAT(e.data_emprestimo, \'%d-%m-%Y\') AS data_emprestimo, DATE_FORMAT(e.data_devolucao_prevista, \'%d-%m-%Y\') AS data_devolucao_prevista, DATE_FORMAT(e.data_devolucao, \'%d-%m-%Y\') AS data_devolucao, CASE  WHEN e.extensao_pedida = TRUE THEN \'Sim\' ELSE \'Não\' END AS extensao_pedida, CASE WHEN e.data_devolucao IS NULL AND e.data_devolucao_prevista < CURDATE() THEN \'Atrasado\' WHEN e.data_devolucao IS NOT NULL AND e.data_devolucao > e.data_devolucao_prevista THEN \'Devolvido Atrasado\' WHEN e.data_devolucao IS NOT NULL AND e.data_devolucao <= e.data_devolucao_prevista THEN \'Devolvido Em Dia\' ELSE \'Em Dia\' END AS status_devolucao, IF(e.extensao_pedida = TRUE, DATEDIFF(e.data_devolucao_prevista, DATE_ADD(e.data_devolucao_prevista, INTERVAL -14 DAY)), 0) AS dias_extensao FROM Emprestimo e JOIN   Aluno a ON e.aluno_id = a.id JOIN Livro l ON e.livro_id = l.id;");
@@ -10,23 +10,21 @@ export const getLoan = async (_, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
+//função responsavel por pegar todos os emprestimos para verificação
 
-export const setLoan = async (_ , res) => {
-    try {
-        const q = "INSERT INTO Emprestimo (aluno_id, livro_id, data_emprestimo, data_devolucao_prevista) VALUES(?));"
-        const values = [
-            req.body.id_aluno,
-            req.body.id_livro,
-            "curdate()",
-            "date_add(curdate(), INTERVAL 14 DAY)",
-        ]
-        db.query(q,[values])
-        return res.status(500).json("Empréstimo criado com sucesso")
-    } catch (error) {
-        return res.json(error.message)
-    }
+export const getAllLoans = async(_, res,) => {
 
-};
+  try {
+      const q = "SELECT * FROM emprestimo"
+      const [rows]= await db.query(q)
+      return rows
+  } catch (error) {
+      return res.json(error.message)
+  }
+  
+  
+}
+// função responsavel por pegar todos os livros
 export const getBooks = async(_, res,) => {
 
     try {
@@ -39,29 +37,72 @@ export const getBooks = async(_, res,) => {
     
     
 }
-export const alterationSet = (req, res) => {
-   try{ 
+// função responsavel por pegar todos os alunos
+export const getStudentsLoan = async () => {
+  try {
+      const q = "SELECT * FROM aluno WHERE aluno.id IN (SELECT aluno_id FROM emprestimo);"; 
+      const [rows] = await db.query(q); // `rows` deve ser um array de alunos
+      
+      return rows; // Retorna o array de alunos
+  } catch (error) {
+      console.error("Erro ao buscar alunos:", error);
+      throw error; // Propaga o erro para o chamador
+  }
+};
+// função utilizada para enviar dados para o banco de dados
+export const alterationSet = async (req, res) => {
+  try{
+    //pegando o valor dos inputs 
     const { formType, formData } = req.body;
-    if (!formType || !formData) {
+    //fazendo teste se todos os dados foram prenchidos
+    if (!formType || !formData|| !Object.keys(formData).length) {
         return res.status(400).send({ error: 'Dados incompletos.' });
       }
-  
+      
       if (formType === 'InserirAlunos') {
+        const rows = await getStudentsLoan(); //essa variavel vai ter todos os alunos cadastrados com emprestimo.
+       
+        //faz uma verificaçãp para saber se esse aluno já tem algum livro emprestado
+        const alunoExistente = rows.find(aluno => aluno.matricula === formData.matricula);
+        if (alunoExistente) {
+          return res.status(400).send({ error: 'Esse aluno já tem um livro emprestado.' });
+        }
+        //vendo se existe campos vazios que são obrigatorios no InserirAlunos
         if (!formData.nomeCompleto || !formData.turma || !formData.matricula) {
           return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir alunos.' });
         }
       }
+        //vendo se existe campos vazios que são obrigatorios no InserirLivros
         if (formType=='InserirLivros'){
+            
             if(!formData.titulo){
                 return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
             }
         }
         if (formType=='NovoEmprestimo'){
-            if(!formData.idAluno|| formData.idLivro){
+            const rows = await getAllLoans() // essa variavel vai ter todos os emprestimos  
+            
+            // verificação para ver se algum aluno ou livro já foi emprestado
+            const emprestimoExistente = rows.find(
+              emprestimo => emprestimo.aluno_id === formData.idAluno || emprestimo.livro_id === formData.idLivro
+          );
+          //retorno caso se já houver emprestimo  
+          if (emprestimoExistente) {
+              if (emprestimoExistente.aluno_id == formData.idAluno) {
+                  return res.status(400).send({ error: "Esse aluno já tem um empréstimo!" });
+              } else {
+                  return res.status(400).send({ error: "Esse livro já foi emprestado!" });
+              }
+          }
+
+          else{
+            if(!formData.idAluno|| !formData.idLivro){
                 return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
             }
+          }
         }
-  
+    // parte que analisa qual vai ser o comando passado ao banco de dados a partir do formType
+        //formtype é um atributo do Form.js
     let query = '';
     if (formType === 'InserirAlunos') {
       query = 'INSERT INTO aluno (nome, turma, matricula) VALUES (?, ?, ?)';
@@ -73,39 +114,34 @@ export const alterationSet = (req, res) => {
     else {
         return res.status(400).send({ error: 'Tipo de formulário inválido.' });
       }
+    // pegando os valores dados no formulario
     const values = Object.values(formData);
+   try {
     db.query(query, values, (err) => {
+    //varias tentativas de pegar erros (sinceramente não sei qual que tá funcionando, tem um monte)
       if (err) {
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(409).send({ error: 'Matrícula já cadastrada.' });
+            return res.status(409).send({ err: 'Matrícula já cadastrada.' });
           }
-        console.error('Erro ao salvar dados:', err);
-        return res.status(500).send({ error: 'Erro ao salvar no banco de dados.' });
+         
+        console.error( 'Erro ao salvar dados:',err);
+        return res.status(500).send({ err: 'Erro ao salvar no banco de dados.' }
+
+        );
       }
-      
-      return res.status(200).send('Dados salvos com sucesso!');
-    });
-  } catch{
-    console.error('Erro no servidor:', err);
-    res.status(500).send({ error: 'Erro no servidor.' });
-  }}
-
-  export const getAllData = async (req, res) => {
-    try {
-        const table = req.params.table; // Recebe a tabela pela URL
-        if (!table) {
-            return res.status(400).json({ error: "Tabela não especificada." });
-        }
-
-        const allowedTables = ["Aluno", "Livro", "Emprestimo"]; // Tabelas permitidas
-        if (!allowedTables.includes(table)) {
-            return res.status(400).json({ error: "Tabela não permitida." });
-        }
-
-        const [rows] = await db.query(`SELECT * FROM ${table}`);
-        return res.status(200).json(rows);
-    } catch (error) {
-        console.error("Erro ao buscar dados:", error);
-        return res.status(500).json({ error: error.message });
+        return res.status(200).send('Dados salvos com sucesso!');
     }
-};
+  )
+      
+      
+   } catch (error) {
+      return res.status(500).send({error:'Erro no servidor:' })
+   }
+    
+    
+  } catch(error){
+    console.error('Erro no servidor: ', error);
+    res.status(500).send({ error: 'Erro no servidor.', details: error.message });
+  }
+}
+

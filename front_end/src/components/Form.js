@@ -55,7 +55,6 @@ const Form = ({ formType }) => {
     ],
     InserirLivros: [
       { label: "Título do Livro", name: "tituloLivro" },
-      { label: "Autor", name: "autor" },
     ],
 
   };
@@ -100,19 +99,25 @@ const Form = ({ formType }) => {
   }, [formData.idLivro]); // O efeito roda sempre que `idLivro` muda
   const handleSubmit = async (e) => {
     e.preventDefault(); // Impede o recarregamento da página
-  
+    
     try {
       await axios.post('http://localhost:8800/salvar', {
         formType,
         formData,
       }).then(()=>{
+        alert("Dados salvos")
         setFormData({}); 
       });
       
     } catch (error) {
-      console.error('Erro ao salvar os dados:', error);
-      alert('Erro ao salvar os dados')
-    }
+      // Captura a mensagem específica do backend
+      if (error.response && error.response.data && error.response.data.error) {
+          alert(`Erro: ${error.response.data.error}`);
+      } else {
+          console.error('Erro inesperado:', error);
+          alert('Erro ao salvar os dados. Tente novamente mais tarde.');
+      }
+  }
   };
   
   
