@@ -84,11 +84,12 @@ export const getGridForm = async (_, res) => {
           END AS tem_livro_emprestado
       FROM Aluno A;
     `
-    const [rowsAluno] = db.query(qAluno);
-    return res.status(200).json(rowsBook);
+    const [rowsAluno] = await db.query(qAluno);
+    const rowsCombined = [...rowsBook, ...rowsAluno];
+    return res.status(200).json(rowsCombined);
   } catch (error) {
     console.log(error.message)
-    return res.status(500).json()
+    return res.status(500).json(error)
   }
 }
 // função responsavel por pegar todos os livros

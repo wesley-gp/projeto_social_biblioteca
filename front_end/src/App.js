@@ -12,8 +12,6 @@ function App() {
 // o que vai retornar para o index
   return (
     <Router>
-    
-   
       <Routes>
         <Route path = "/" element= {<HomePage/>} />
         <Route path="/Consultar" element={<Consultar />} />
@@ -22,7 +20,7 @@ function App() {
         <Route path="/NovoEmprestimo" element={<NovoEmprestimo />} />
       </Routes>
       <GlobalStyle/>
-      </Router>
+    </Router>
   );
 }
 
