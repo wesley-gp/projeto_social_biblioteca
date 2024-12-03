@@ -12,6 +12,19 @@ export const Search = styled.input`
     max-width: 600px;
 
 `
+
+  const setGrid = async()=>{
+    try {
+        const res = await axios.get("http://localhost:8800/GridForm");
+        return res.data
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+
+
+
 //widget que vai ser exportado
 const GridForm = ()=>{
       

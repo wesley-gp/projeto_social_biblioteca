@@ -51,6 +51,46 @@ export const getAllLoans = async (_, res,) => {
 
 
 }
+export const getGridForm = async (_, res) => {
+  try {
+    const qBook = `
+      SELECT 
+          L.id AS livro_id,
+          L.titulo AS livro_titulo,
+          CASE 
+              WHEN EXISTS (
+                  SELECT 1 
+                  FROM Emprestimo E 
+                  WHERE E.livro_id = L.id 
+                    AND E.data_devolucao IS NULL
+              ) THEN TRUE  
+              ELSE FALSE 
+          END AS livro_emprestado
+      FROM Livro L;
+    `
+    const [rowsBook] = await db.query(qBook)
+    const qAluno = `
+      SELECT 
+          A.id AS aluno_id,
+          A.nome AS aluno_nome,
+          CASE 
+              WHEN EXISTS (
+                  SELECT 1 
+                  FROM Emprestimo E 
+                  WHERE E.aluno_id = A.id 
+                    AND E.data_devolucao IS NULL
+              ) THEN TRUE  
+              ELSE FALSE 
+          END AS tem_livro_emprestado
+      FROM Aluno A;
+    `
+    const [rowsAluno] = db.query(qAluno);
+    return res.status(200).json(rowsBook);
+  } catch (error) {
+    console.log(error.message)
+    return res.status(500).json()
+  }
+}
 // função responsavel por pegar todos os livros
 export const getBooks = async (_, res,) => {
 
