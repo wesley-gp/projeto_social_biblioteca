@@ -5,6 +5,7 @@ import InserirAlunos from "./pages/InserirAlunos";
 import InserirLivros from "./pages/InserirLivros";
 import NovoEmprestimo from "./pages/NovoEmprestimo";
 import HomePage from "./pages/HomePage";
+import InserirLivroRepetido from "./pages/InserirLivroRepetido";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/InserirAlunos" element={<InserirAlunos />} />
         <Route path="/InserirLivros" element={<InserirLivros />} />
         <Route path="/NovoEmprestimo" element={<NovoEmprestimo />} />
+        <Route path = "/InserirLivroRepetido" element= {<InserirLivroRepetido/>} />
       </Routes>
       <GlobalStyle/>
     </Router>

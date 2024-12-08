@@ -51,7 +51,7 @@ export const getAllLoans = async (_, res,) => {
 
 
 }
-export const getGridForm = async (_, res) => {
+export const getSearchItems = async (_, res) => {
   try {
     const qBook = `
       SELECT 
@@ -177,7 +177,7 @@ export const alterationSet = async (req, res) => {
 
       else {
         if (!formData.idAluno || !formData.idLivro) {
-          return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir livros.' });
+          return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir Emprestimo.' });
         }
       }
       // fazer linha de verificação
@@ -191,6 +191,9 @@ export const alterationSet = async (req, res) => {
       query = 'INSERT INTO livro (titulo) VALUES (?)';
     } else if (formType === 'NovoEmprestimo') {
       query = 'INSERT INTO Emprestimo (livro_id, aluno_id, data_emprestimo, data_devolucao_prevista) VALUES(?, ?, CURDATE(), date_add(curdate(), INTERVAL 14 DAY));';
+    }
+    else if (formType=== 'InserirLivrosRepetidos'){
+      query = 'CALL InserirLivros(?, ?, ?)'
     }
     else {
       return res.status(400).send({ error: 'Tipo de formulário inválido.' });

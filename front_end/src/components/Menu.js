@@ -54,6 +54,9 @@ const Menu = () => {
       <ButtomContainer>
           <ButtonLink to="/NovoEmprestimo">Novo Empréstimo</ButtonLink>
       </ButtomContainer>
+      <ButtomContainer>
+          <ButtonLink to="/InserirLivroRepetido">Inserir Livros Repetidos</ButtonLink>
+      </ButtomContainer>
     </Div>
   
     );

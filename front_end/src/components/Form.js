@@ -2,43 +2,8 @@ import React, { useState, useEffect,useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
 // estilizações
-const FormContainer = styled.form`
-    width: 100%;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #228b22;
 
-`
-const InputArea = styled.div`
-    
 
-`
-const Label = styled.label`
-    display: block;
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 8px;
-  `;
-const Input = styled.input`
-    width: 120px;
-    padding: 0 10px;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    height: 40px;
-
-`
-const Button = styled.button`
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    border: none;
-    background-color: #2c73d2;
-    color: white;
-    height: 42px;
-    
-`
 
 const Container = styled.div`
   width: 100%;
@@ -122,6 +87,12 @@ const Form = ({ formType }) => {
       { label: "Título do Livro", name: "tituloLivro" },
       {label: "Autor", name:"autor"}
     ],
+    InserirLivrosRepetidos:[
+      {label:"Quantidade de Livros", name:"numeroDeLivros"},
+      {label: "Título do Livro", name:"tituloLivro"},
+      {label: "Autor do Livro", name:"autor"},
+      
+    ]
 
   };
 

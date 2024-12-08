@@ -30,7 +30,7 @@ const GridForm = ()=>{
       
     
     return (
-       
+       <>
         <Div>
             <Search type="search"/>
             <ul>
@@ -40,7 +40,10 @@ const GridForm = ()=>{
                 </li>
             </ul>
         </Div>
-      
+        <Div>
+            
+        </Div>
+        </>
 
     )
         
