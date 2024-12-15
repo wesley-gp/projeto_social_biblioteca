@@ -1,6 +1,7 @@
-import React, { useState, useEffect,useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
+
 // estilizações
 
 
@@ -68,36 +69,43 @@ const NewForm = styled.form`
 `;
 
 const Form = ({ formType }) => {
+  //usesStates
   const [formData, setFormData] = useState({});
   const [tituloLivro, setTituloLivro] = useState("");
   const [nomeAluno, setNomeAluno] = useState("");
+  const [arrayItems, setArrayItems] = useState([]);
+  const [inputTitulo, setInputTitulo] = useState("");
+  const [inputAutor, setInputAutor] = useState("");
 
   const formConfigurations = {
     NovoEmprestimo: [
       { label: "ID do Livro", name: "idLivro" },
       { label: "ID do Aluno", name: "idAluno" },
-      
+
     ],
     InserirAlunos: [
       { label: "Nome Completo", name: "nomeCompleto" },
       { label: "Turma", name: "turma" },
-      { label: "Matrícula", name: "matricula"}
+      { label: "Matrícula", name: "matricula" }
     ],
     InserirLivros: [
       { label: "Título do Livro", name: "tituloLivro" },
-      {label: "Autor", name:"autor"}
+      { label: "Autor", name: "autor" }
     ],
-    InserirLivrosRepetidos:[
-      {label:"Quantidade de Livros", name:"numeroDeLivros"},
-      {label: "Título do Livro", name:"tituloLivro"},
-      {label: "Autor do Livro", name:"autor"},
-      
-    ]
+    InserirLivrosRepetidos: [
+      { label: "Quantidade de Livros", name: "numeroDeLivros" },
+      { label: "Título do Livro", name: "tituloLivro" },
+      { label: "Autor do Livro", name: "autor" },
 
+    ],
+    InserirLivrosDiferentes: [
+      { label: "Titulo do Livro", name: "tituloLivro" },
+      { label: "Autor do Livro", name: "autor" }
+    ]
   };
 
   const fields = formConfigurations[formType] || [];
-  
+
   // Atualiza o estado local com os valores dos campos
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,61 +140,124 @@ const Form = ({ formType }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (!formData.idLivro) {
-          setTituloLivro(""); // Limpa o título se o ID do livro estiver ausente
+        setTituloLivro(""); // Limpa o título se o ID do livro estiver ausente
       }
-    
+
       if (!formData.idAluno) {
-          setNomeAluno(""); // Limpa o nome se o ID do aluno estiver ausente
+        setNomeAluno(""); // Limpa o nome se o ID do aluno estiver ausente
       }
-      
+
       // Continua para buscar dados somente se pelo menos um ID estiver presente
       if (!formData.idLivro && !formData.idAluno) {
-          return;
+        return;
       }
       try {//tenta pegar os valores dos Form, caso contrario deixa ""
         const [tituloLivro, nomeAluno] = await Promise.all([
           formData.idLivro ? fetchLivro(formData.idLivro) : "",
           formData.idAluno ? fetchAluno(formData.idAluno) : "",
         ]);
-  
+
         setTituloLivro(tituloLivro);
         setNomeAluno(nomeAluno);
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
       }
     };
-    
-  
+
+
     fetchData();
-    
-  }, [formData.idLivro, formData.idAluno,fetchAluno,fetchLivro]); // O efeito roda sempre que `idLivro` ou `idAluno` muda
+
+  }, [formData.idLivro, formData.idAluno, fetchAluno, fetchLivro]); // O efeito roda sempre que `idLivro` ou `idAluno` muda
   const handleSubmit = async (e) => {
     e.preventDefault(); // Impede o recarregamento da página
-    
+
+    const envioData = formType === "InserirLivrosDiferentes"
+  ? { formattedArray: arrayItems }
+  : { formData };
     try {
       console.log(formData)
       console.log(formType)
       await axios.post('http://localhost:8800/salvar', {
         formType,
-        formData,
-      }).then(()=>{
+        ...envioData,
+      }).then(() => {
         alert("Dados salvos")
-        setFormData({}); 
+        setFormData({});
+        setArrayItems([]);
       });
-      
+
     } catch (error) {
       // Captura a mensagem específica do backend
       if (error.response && error.response.data && error.response.data.error) {
-          alert(`Erro: ${error.response.data.error}`);
+        alert(`Erro: ${error.response.data.error}`);
       } else {
-          console.error('Erro inesperado:', error);
-          alert('Erro ao salvar os dados. Tente novamente mais tarde.');
+        console.error('Erro inesperado:', error);
+        alert('Erro ao salvar os dados. Tente novamente mais tarde.');
       }
-  }
+    }
   };
-  
-  
+
+  //adciona lista de itens na livros diferentes
+  const handleAddItem = () => {
+    if (inputTitulo.trim() && inputAutor.trim()) {
+      const novoItem = `${inputTitulo}:${inputAutor}`;
+      setArrayItems([...arrayItems, novoItem]);
+      setInputTitulo("");
+      setInputAutor("");
+    }
+    else{
+      alert("Preencha todos os campos para adicionar um livro.");
+      return;
+    }
+  };
+
+  if (formType === "InserirLivrosDiferentes") {
+    return (
+      <Container>
+         <Title>{formType}</Title>
+        <NewForm onSubmit={handleSubmit}>
+          <div>
+            <label>Título do Livro</label>
+            <input
+              value={inputTitulo}
+              onChange={(e) => setInputTitulo(e.target.value)}
+              placeholder="Digite o título"
+              
+            />
+          </div>
+
+          <div>
+            <label>Autor</label>
+            <input
+              value={inputAutor}
+              onChange={(e) => setInputAutor(e.target.value)}
+              placeholder="Digite o autor"
+              
+            />
+          </div>
+
+          <button type="button" onClick={handleAddItem}>
+            Adicionar
+          </button>
+
+          {arrayItems.length > 0 && (
+            <div>
+              <h3>Livros Adicionados</h3>
+              <ul>
+                {arrayItems.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <button type="submit">Salvar</button>
+        </NewForm>
+      </Container>
+    )
+  }
   return (
+
     <>
       <Container>
         <Title>{formType}</Title>
@@ -207,7 +278,6 @@ const Form = ({ formType }) => {
               />
             </div>
           ))}
-
           <button type="submit" onClick={handleSubmit}>Salvar</button>
         </NewForm>
       </Container>

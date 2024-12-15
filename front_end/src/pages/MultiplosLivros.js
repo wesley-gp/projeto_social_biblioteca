@@ -1,17 +1,15 @@
-// pages/InserirLivros.js
+// pages/InserirLivroRepetido.js
 import React from "react";
 
+import Form from "../components/Form";
 
 
 
 
-const MultiplosLivros = () => {
-  
-
+const InserirLivrosDiferentes = () => {
   return (
-    <input type="submit"/>
-    
+    <Form formType="InserirLivrosDiferentes"/>
   );
 };
 
-export default MultiplosLivros;
+export default InserirLivrosDiferentes;

@@ -57,6 +57,9 @@ const Menu = () => {
       <ButtomContainer>
           <ButtonLink to="/InserirLivroRepetido">Inserir Livros Repetidos</ButtonLink>
       </ButtomContainer>
+      <ButtomContainer>
+          <ButtonLink to="/InserirLivrosDiferentes">Inserir Livros Diferentes</ButtonLink>
+      </ButtomContainer>
     </Div>
   
     );

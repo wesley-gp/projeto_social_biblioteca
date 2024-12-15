@@ -71,8 +71,9 @@ const Consultar = () => {
   return (
     <Container>
       <Title>Consultar Livros</Title>
-      <StyledForm />
+      
     </Container>
+
   );
 };
 

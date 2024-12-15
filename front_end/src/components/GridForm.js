@@ -15,7 +15,7 @@ export const Search = styled.input`
 
   const setGrid = async()=>{
     try {
-        const res = await axios.get("http://localhost:8800/GridForm");
+        const res = await axios.get("http://localhost:8800/search");
         return res.data
       } catch (error) {
         console.log(error);

@@ -97,7 +97,7 @@ const HomePage = () => {
       <Container>
         <Title>Sistema Bibliotecário</Title>
         <StyledMenu />
-        {/*<Button onClick={() => toast.info("Ação personalizada!")}>Adicionar Novo Livro</Button>*/}
+        
         <StyledGrid loans={loans} />
       </Container>
       <ToastContainer autoClose={3000} position={"bottom-left"} />

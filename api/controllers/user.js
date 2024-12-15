@@ -133,9 +133,9 @@ export const getStudentsLoan = async () => {
 export const alterationSet = async (req, res) => {
   try {
     //pegando o valor dos inputs 
-    const { formType, formData } = req.body;
+    const { formType, formData, formattedArray } = req.body;
     //fazendo teste se todos os dados foram prenchidos
-    if (!formType || !formData || !Object.keys(formData).length) {
+    if (!formType || (!formData && formType !== 'InserirLivrosDiferentes') || (formType === 'InserirLivrosDiferentes' && !formattedArray)) {
       return res.status(400).send({ error: 'Dados incompletos.' });
     }
 
@@ -175,6 +175,8 @@ export const alterationSet = async (req, res) => {
         }
       }
 
+      
+
       else {
         if (!formData.idAluno || !formData.idLivro) {
           return res.status(400).send({ error: 'Campos obrigatórios ausentes para Inserir Emprestimo.' });
@@ -184,6 +186,7 @@ export const alterationSet = async (req, res) => {
     }
     // parte que analisa qual vai ser o comando passado ao banco de dados a partir do formType
     //formtype é um atributo do Form.js
+    let values;
     let query = '';
     if (formType === 'InserirAlunos') {
       query = 'INSERT INTO aluno (nome, turma, matricula) VALUES (?, ?, ?)';
@@ -195,12 +198,19 @@ export const alterationSet = async (req, res) => {
     else if (formType=== 'InserirLivrosRepetidos'){
       query = 'CALL InserirLivros(?, ?, ?)'
     }
+    else if (formType==='InserirLivrosDiferentes'){
+      query = 'CALL InserirVariosLivros(?)'
+      values = [formattedArray.join(',')];
+    }
     else {
       return res.status(400).send({ error: 'Tipo de formulário inválido.' });
     }
     // pegando os valores dados no formulario
-    const values = Object.values(formData);
-    console.log(values)
+    if(formType!=="InserirLivrosDiferentes"){
+      values =Object.values(formData);
+    }
+    
+    console.log(` valores do formData: ${values}`)
     try {
       await db.query(query, values, (err) => {
         //varias tentativas de pegar erros (sinceramente não sei qual que tá funcionando, tem um monte)

@@ -6,6 +6,7 @@ import InserirLivros from "./pages/InserirLivros";
 import NovoEmprestimo from "./pages/NovoEmprestimo";
 import HomePage from "./pages/HomePage";
 import InserirLivroRepetido from "./pages/InserirLivroRepetido";
+import InserirLivrosDiferentes from "./pages/MultiplosLivros";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/InserirLivros" element={<InserirLivros />} />
         <Route path="/NovoEmprestimo" element={<NovoEmprestimo />} />
         <Route path = "/InserirLivroRepetido" element= {<InserirLivroRepetido/>} />
+        <Route path = "/InserirLivrosDiferentes" element= {<InserirLivrosDiferentes/>} />
       </Routes>
       <GlobalStyle/>
     </Router>
