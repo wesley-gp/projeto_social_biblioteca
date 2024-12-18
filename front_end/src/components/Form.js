@@ -27,7 +27,9 @@ const Title = styled.h1`
   font-weight: bold;
   margin-bottom: 20px;
 `;
-
+const Div = styled.div`
+ 
+`
 const NewForm = styled.form`
   width: 100%;
   padding: 20px;
@@ -256,15 +258,42 @@ const Form = ({ formType }) => {
       </Container>
     )
   }
+
+  if(formType === "NovoEmprestimo"){
+    return (
+
+      <>
+        <Container>
+          <Title>{formType}</Title>
+          
+          <Div>
+            <h1>{tituloLivro}</h1>
+            <h1>{nomeAluno}</h1>
+          </Div>
+  
+          <NewForm>
+            {fields.map((field, index) => (
+              <div key={index}>
+                <label>{field.label}</label>
+                <input
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            ))}
+            <button type="submit" onClick={handleSubmit}>Salvar</button>
+          </NewForm>
+        </Container>
+      </>
+    );
+  }
   return (
 
     <>
       <Container>
         <Title>{formType}</Title>
-        <div>
-          <h1>{tituloLivro}</h1>
-          <h1>{nomeAluno}</h1>
-        </div>
 
         <NewForm>
           {fields.map((field, index) => (

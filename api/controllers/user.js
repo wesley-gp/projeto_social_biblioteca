@@ -57,6 +57,7 @@ export const getSearchItems = async (_, res) => {
       SELECT 
           L.id AS livro_id,
           L.titulo AS livro_titulo,
+          L.autor AS livro_autor,
           CASE 
               WHEN EXISTS (
                   SELECT 1 
@@ -73,6 +74,8 @@ export const getSearchItems = async (_, res) => {
       SELECT 
           A.id AS aluno_id,
           A.nome AS aluno_nome,
+          A.matricula AS aluno_matricula,
+          A.turma AS aluno_turma,
           CASE 
               WHEN EXISTS (
                   SELECT 1 
