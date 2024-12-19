@@ -74,25 +74,27 @@ const Consultar = () => {
       .catch(err => console.error('Erro ao carregar dados:', err));
   }, []);
 
-  // Filtra sugestões de alunos e livros
-  useEffect(() => {
-    if (filtro) {
-      const textoFiltrado = removerAcentos(filtro.toLowerCase());
-      const resultados = dados.filter(item => {
-        const alunoCorrespondente = item.aluno_nome && 
-          removerAcentos(item.aluno_nome.toLowerCase()).includes(textoFiltrado);
+ 
+ // Filtra sugestões e controla exibição de detalhes
+useEffect(() => {
+  if (filtro) {
+    const textoFiltrado = removerAcentos(filtro.toLowerCase());
+    const resultados = dados.filter(item => {
+      const alunoCorrespondente = item.aluno_nome && 
+        removerAcentos(item.aluno_nome.toLowerCase()).includes(textoFiltrado);
 
-        const livroCorrespondente = item.livro_titulo && 
-          removerAcentos(item.livro_titulo.toLowerCase()).includes(textoFiltrado);
+      const livroCorrespondente = item.livro_titulo && 
+        removerAcentos(item.livro_titulo.toLowerCase()).includes(textoFiltrado);
 
-        return alunoCorrespondente || livroCorrespondente;
-      });
-      setSugestoes(resultados);
-    } else {
-      setSugestoes([]);
-      setDetalhes(null);
-    }
-  }, [filtro, dados]);
+      return alunoCorrespondente || livroCorrespondente;
+    });
+    setSugestoes(resultados);
+    setDetalhes(null);  
+  } else {
+    setSugestoes([]);
+  }
+}, [filtro, dados]);
+
 
   // Exibe detalhes do item selecionado
   const renderDetalhes = (item) => {
@@ -100,58 +102,75 @@ const Consultar = () => {
       setDetalhes({
         tipo: 'Aluno',
         nome: item.aluno_nome,
+        matricula: item.aluno_matricula,
+        turma: item.aluno_turma,
         status: `Livro Emprestado: ${item.tem_livro_emprestado ? 'Sim' : 'Não'}`,
         id: item.aluno_id
       });
     } else if (item.livro_titulo) {
       setDetalhes({
         tipo: 'Livro',
-        nome: item.livro_titulo,
+        titulo: item.livro_titulo,
+        autor: item.livro_autor,
         status: `Emprestado: ${item.livro_emprestado ? 'Sim' : 'Não'}`,
         id: item.livro_id
       });
     }
-    setSugestoes([]);
+    setFiltro('');  // Limpa o input
+    setSugestoes([]);  // Esconde sugestões
   };
 
   return (
     <>
-    <Container>
-      <Title>Consulta</Title>
-      <input
-        type="text"
-        placeholder="Pesquisar Alunos ou Livros..."
-        value={filtro}
-        onChange={e => setFiltro(e.target.value)}
-      />
-      <Div>
-      
+      <Container>
+        <Title>Consulta</Title>
+        <input
+          type="text"
+          placeholder="Pesquisar Alunos ou Livros..."
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+        />
+        <Div>
 
-      {sugestoes.length > 0 && (
-        <ul>
-          {sugestoes.map(item => (
-            <li 
-              key={item.aluno_id || item.livro_id} 
-              onClick={() => renderDetalhes(item)}
-            >
-              {item.aluno_nome || item.livro_titulo}
-            </li>
-          ))}
-        </ul>
-      )}
 
-      {detalhes && (
-        <div className="detalhes">
-          <h3>Informações Detalhadas</h3>
-          <p><strong>Tipo:</strong> {detalhes.tipo}</p>
-          <p><strong>Nome:</strong> {detalhes.nome}</p>
-          <p><strong>Status:</strong> {detalhes.status}</p>
-          <p><strong>ID:</strong> {detalhes.id}</p>
-        </div>
-      )}
-    </Div>
-    </Container>
-    
+          {sugestoes.length > 0 && (
+            <ul>
+              {sugestoes.map(item => (
+                <li
+                  key={item.aluno_id || item.livro_id}
+                  onClick={() => renderDetalhes(item)}
+                >
+                  {item.aluno_nome || item.livro_titulo}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {detalhes && (
+            <div className="detalhes">
+              <h3>Informações Detalhadas</h3>
+              <p><strong>Tipo:</strong> {detalhes.tipo}</p>
+              {detalhes.tipo === 'Aluno' ? (
+                <>
+                  <p><strong>Nome:</strong> {detalhes.nome}</p>
+                  <p><strong>Matrícula:</strong> {detalhes.matricula}</p>
+                  <p><strong>Turma:</strong> {detalhes.turma}</p>
+                  <p><strong>Status:</strong> {detalhes.status}</p>
+                  <p><strong>ID:</strong> {detalhes.id}</p>
+                </>
+              ) : (
+                <>
+                  <p><strong>Título:</strong> {detalhes.titulo}</p>
+                  <p><strong>Autor:</strong> {detalhes.autor}</p>
+                  <p><strong>Status:</strong> {detalhes.status}</p>
+                  <p><strong>ID:</strong> {detalhes.id}</p>
+                </>
+              )}
+            </div>
+          )}
+        </Div>
+      </Container>
+
     </>
   );
 }
